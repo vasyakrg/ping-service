@@ -1,0 +1,27 @@
+version: '3.5'
+
+services:
+  phpfpm:
+    image: 'bitnami/php-fpm:latest'
+    networks:
+      - app-tier
+    volumes:
+      - ./app/html:/app
+
+  nginx:
+    image: 'bitnami/nginx:latest'
+    depends_on:
+      - phpfpm
+    networks:
+      - app-tier
+    ports:
+      - '8080:8080'
+      - '8443:8443'
+    volumes:
+      - ./app/html:/app
+      - .config/php.ini:/opt/bitnami/php/lib/php.ini:ro
+      - ./config/default.conf:/opt/bitnami/nginx/conf/vhosts/ping.conf:ro
+
+networks:
+  app-tier:
+    driver: bridge
